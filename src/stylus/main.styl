@@ -1,0 +1,51 @@
+/* overwriting */
+
+
+#app
+  font-family 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  text-align center
+  color #2c3e50
+
+#nav
+  padding 30px
+  a
+    font-weight bold
+    color #2c3e50
+    &.router-link-exact-active
+      color #42b983
+
+#drawing
+  width: 100%
+  height: 100%
+  min-height: 300px
+  min-width: 500px
+
+.layer-box
+  border-radius: 3px
+  background-color: #fcfcfc
+  margin-bottom: 10px!important
+
+.layer-box .v-messages,  .layer-box .v-text-field__details
+  display: none
+
+.layer-box .vue-swatches
+  display: inline-block
+
+.layer-box .vue-swatches > div
+  display: inline
+
+.layer-box .vue-swatches__trigger
+  width: 29.5px!important
+  height: 29.5px!important
+  border-radius: 7px!important
+  border: 1.6px solid rgb(158, 158, 158)
+
+.close-btn
+  width: 20px
+  height: 20px
+  float: right
+
+.close-btn .v-icon
+  font-size: 16px
