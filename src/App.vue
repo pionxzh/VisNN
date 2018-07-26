@@ -1,6 +1,6 @@
 <template lang='pug'>
     v-app
-        v-navigation-drawer.pb-0(app clipped fixed v-model='drawer' :mobile-break-point=800 :width=450 enable-resize-watcher)
+        v-navigation-drawer.pb-0.fix-nav-drawer(app clipped fixed v-model='drawer' :mobile-break-point=800 :width=470 enable-resize-watcher)
             v-layout(fill-height)
                 v-navigation-drawer(dark mini-variant stateless value='true' :mobile-break-point=800)
                     v-list.pt-0
@@ -11,7 +11,7 @@
                                 v-list-tile-content
                                     v-list-tile-title {{ item.title }}
                             span(style='font-size: 16px;') {{ item.title }}
-                v-card(width=369 v-if='tab==="Layers"')
+                v-card(width=389 v-if='tab==="Layers"')
                     v-card-title
                         div(style='width: 100%')
                             h3.headline.mb-4 Layers
@@ -29,20 +29,25 @@
                                             v-text-field(label='Name' type='text' v-model='item.name' outline)
                                         v-flex(xs12 sm4)
                                             v-tooltip(top)
-                                                swatches(v-model='item.color' slot='activator' colors='text-advanced' popover-to='right' swatch-size='25')
+                                                swatches(v-model='item.color' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
                                                 span Fill-Color
                                             v-tooltip(top)
-                                                swatches(v-model='item.bgColor' slot='activator' colors='text-advanced' popover-to='right' swatch-size='25')
+                                                swatches(v-model='item.bgColor' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
                                                 span Backgrond-Color
                                             v-tooltip(top)
-                                                swatches(v-model='item.borderColor' slot='activator' colors='text-advanced' popover-to='right')
+                                                swatches(v-model='item.borderColor' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
                                                 span Border-Color
                                         v-flex(xs12 sm8)
                                             v-slider(v-model='item.spacing' min=20 max=100 step=5 label='Spacing')
+                                        v-flex(xs12)
+                                            v-btn-toggle
+                                                v-btn(flat)
+                                                    span Left
+                                                    v-icon format_align_left
                             v-btn(block color='primary' @click='addLayer')
                                 v-icon add
 
-                v-card(width=369 v-if='tab==="Styles"')
+                v-card(width=389 v-if='tab==="Styles"')
                     v-card-title
                         div.px-3(style='width: 100%')
                             h3.headline.mb-4 Style
@@ -113,6 +118,7 @@ export default {
         nodes: [],
         links: [],
         layers: [],
+        omits: [],
         listItems: [{
             icon: 'reorder',
             title: 'Layers'
@@ -137,7 +143,8 @@ export default {
                 diamiter: 50,
                 color: '#fff',
                 borderColor: '#111',
-                borderWidth: 1
+                borderWidth: 1,
+                omitGap: 8
             },
             layer: {
                 spacing: 190,
@@ -147,37 +154,72 @@ export default {
         },
         architecture: [{
             name: 'Input Layer',
-            amount: 4,
+            amount: 744,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(234, 153, 153)',
             borderColor: '#000'
         }, {
             name: 'Hidden Layer #1',
-            amount: 8,
+            amount: 16,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(164, 194, 244)',
             borderColor: '#000'
         }, {
             name: 'Hidden Layer #2',
-            amount: 12,
+            amount: 16,
+            spacing: 50,
+            color: '#FFF',
+            bgColor: 'rgb(164, 194, 244)',
+            borderColor: '#000'
+        }, {
+            name: 'Hidden Layer #3',
+            amount: 16,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(164, 194, 244)',
             borderColor: '#000'
         }, {
             name: 'Output Layer',
-            amount: 3,
+            amount: 10,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(182, 215, 168)',
             borderColor: '#000'
-        }]
+        }],
+        colorTemplate: [
+            ['#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef', '#fafafa', '#ffffff'],
+            ['#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff', '#ff00ff'],
+            ['#e6b8af', '#f4cccc', '#fce5cd', '#fff2cc', '#d9ead3', '#d0e0e3', '#c9daf8', '#cfe2f3', '#d9d2e9', '#ead1dc'],
+            ['#dd7e6b', '#ea9999', '#f9cb9c', '#ffe599', '#b6d7a8', '#a2c4c9', '#a4c2f4', '#9fc5e8', '#b4a7d6', '#d5a6bd'],
+            ['#cc4125', '#e06666', '#f6b26b', '#ffd966', '#93c47d', '#76a5af', '#6d9eeb', '#6fa8dc', '#8e7cc3', '#c27ba0'],
+            ['#a61c00', '#cc0000', '#e69138', '#f1c232', '#6aa84f', '#45818e', '#3c78d8', '#3d85c6', '#674ea7', '#a64d79'],
+            ['#85200c', '#990000', '#b45f06', '#bf9000', '#38761d', '#134f5c', '#1155cc', '#0b5394', '#351c75', '#741b47'],
+            ['#5b0f00', '#660000', '#783f04', '#7f6000', '#274e13', '#0c343d', '#1c4587', '#073763', '#20124d', '#4c1130']
+        ]
     }),
     // computed: {},
     mounted () {
-        this.checkSVGSupport()
+        this.init()
+        let preset = window.location.search
+        if (!preset.length) return
+
+        let layers = preset.split('=')[1].split(',').map(item => parseInt(item))
+        console.log(layers)
+        this.architecture = []
+        layers.forEach((item, index) => {
+            const name = index === 0 ? 'Input layer' : index === (layers.length - 1) ? 'Output layer' : `Hidden Layer #${index}`
+            const bgColor = index === 0 ? 'rgb(234, 153, 153)' : index === (layers.length - 1) ? 'rgb(182, 215, 168)' : 'rgb(164, 194, 244)'
+            this.architecture.push({
+                name: name,
+                amount: item,
+                spacing: 50,
+                color: '#FFF',
+                bgColor: bgColor,
+                borderColor: '#000'
+            })
+        })
     },
     watch: {
         options: {
@@ -195,17 +237,13 @@ export default {
         }
     },
     methods: {
-        checkSVGSupport () {
-            if (SVG.supported) {
-                this.init()
-            } else {
-                alert('SVG is not supported, Please use the latest version of Chrome or Firefox')
-            }
-        },
-
         init () {
+            if (!SVG.supported) {
+                return alert('SVG is not supported, Please use the latest version of Chrome or Firefox')
+            }
+
             this.graph = SVG('drawing')
-            this.addMouseAction()
+            this.addMouseEventBinding()
             window.addEventListener('resize', this.updateSVGSize)
             // window.onresize = this.updateSVGSize
 
@@ -243,7 +281,7 @@ export default {
             }
         },
 
-        addMouseAction () {
+        addMouseEventBinding () {
             this.graph.on('mousewheel', e => this.zoom(e))
 
             this.graph.on('mousedown', function (event) {
@@ -267,6 +305,7 @@ export default {
 
         zoom (e) {
             e.stopPropagation()
+
             let min = 200
             let max = 3000
             let step = 50
@@ -280,8 +319,10 @@ export default {
                 node: this.graph.set(),
                 link: this.graph.set()
             })
-            if (this.architecture[this.architecture.length - 1].name.indexOf('Output Layer') !== -1) {
-                this.architecture[this.architecture.length - 1].name = `Hidden Layer #${this.architecture.length - 1}`
+
+            let last = this.architecture.length - 1
+            if (this.architecture[last].name.indexOf('Output Layer') !== -1) {
+                this.architecture[last].name = `Hidden Layer #${last}`
             }
             this.architecture.push({
                 name: 'Output Layer',
@@ -309,7 +350,18 @@ export default {
             return this.graph.rect(sizeX, sizeY).center(x, y).fill(color)
         },
 
+        drawOmit (item) {
+            this.graph.circle(7).center(item.x, item.y - this.options.node.omitGap)
+            this.graph.circle(7).center(item.x, item.y + this.options.node.omitGap)
+        },
+
         buildMap () {
+            const centerX = this.w / 2
+            const centerY = this.h / 2
+            const offsetX = this.options.layer.spacing
+            const maxLayerNode = Math.max(...this.architecture.map(item => item.amount))
+            const centerLayerIndex = ~~(this.architecture.filter(item => item.amount > 0).length / 2)
+
             let layerNum = this.architecture.length
             this.layers = this.architecture.map(index => {
                 return {
@@ -318,20 +370,43 @@ export default {
                 }
             })
 
-            let centerLayerIndex = ~~(this.architecture.filter(item => item.amount > 0).length / 2)
-            let centerX = this.w / 2
-            let centerY = this.h / 2
-            let offsetX = this.options.layer.spacing
-
+            this.omits = []
             this.nodes = this.architecture.filter(item => item.amount > 0).map((item, layer) => {
-                let centerNodeIndex = item.amount === 1 ? 0 : item.amount % 2 ? ~~(item.amount / 2) : item.amount / 2 - 0.5
-                let itemX = centerX + (layer - centerLayerIndex) * offsetX
-                return range(item.amount).map(index => ({
+                const spacing = item.amount > 13 ? 45 : item.spacing
+                const itemX = centerX + (layer - centerLayerIndex) * offsetX
+
+                let isOmit = false
+                let isOmit2 = false
+                let nodeAmount = item.amount
+                let centerNodeIndex = item.amount % 2 ? ~~(item.amount / 2) : item.amount / 2 - 0.5
+
+                // if there are more than 65 nodes, add two omit sign
+                if (item.amount > 65) {
+                    isOmit2 = true
+                    nodeAmount = 14
+
+                    centerNodeIndex = nodeAmount % 2 ? ~~(nodeAmount / 2) : nodeAmount / 2 - 0.5
+                    this.omits.push({ x: itemX, y: centerY + (4.5 - centerNodeIndex) * spacing })
+                    this.omits.push({ x: itemX, y: centerY + (8.5 - centerNodeIndex) * spacing })
+                } else if (item.amount > 15) {
+                    isOmit = true
+                    nodeAmount = 12
+
+                    centerNodeIndex = nodeAmount % 2 ? ~~(nodeAmount / 2) : nodeAmount / 2 - 0.5
+                    this.omits.push({ x: itemX, y: centerY })
+                }
+
+                // remove the node occupyed by omit sign
+                let temp = range(nodeAmount).filter(index => isOmit ? (index !== 5 && index !== 6) : isOmit2 ? (index !== 4 && index !== 5 && index !== 8 && index !== 9) : true)
+
+                // omit will cause the node to be pushed away
+                let omitMarginSize = (item.amount > 15 && item.amount < 64) ? (item.amount / maxLayerNode) * 50 : 0
+                return temp.map(index => ({
                     id: `${layer}_${index}`,
                     layer: layer,
                     node: index,
                     x: itemX,
-                    y: centerY + (index - centerNodeIndex) * item.spacing
+                    y: centerY + (index - centerNodeIndex) * spacing + (index > centerNodeIndex ? omitMarginSize : -omitMarginSize)
                 }))
             })
             this.links = range(layerNum).map(index => [])
@@ -348,12 +423,26 @@ export default {
 
         drawMap () {
             parseFromID('1_2')
+
+            let textCenterY = 0
+
+            // draw outter box
             this.nodes.forEach((layer, index) => {
                 let sizeY = layer[layer.length - 1].y - layer[0].y + this.architecture[index].spacing + this.options.node.diamiter
                 let centerY = layer.length % 2 ? layer[~~(layer.length / 2)].y : (layer[layer.length / 2 - 1].y + layer[layer.length / 2].y) / 2
+                if (centerY + sizeY / 2 > textCenterY) textCenterY = centerY + sizeY / 2 - 10
                 this.drawRect(70, sizeY, layer[0].x, centerY, this.architecture[index].bgColor)
             })
 
+            // draw layer name
+            this.nodes.forEach((layer, index) => {
+                this.graph.text(this.architecture[index].name).font({size: 18})
+                    .center(layer[0].x, textCenterY + this.architecture[index].spacing)
+                this.graph.text(`${this.architecture[index].amount} neurals`).font({size: 16})
+                    .center(layer[0].x, textCenterY + this.architecture[index].spacing + 20)
+            })
+
+            // draw link between layer
             this.links.forEach((layer, index) => {
                 layer.forEach(link => {
                     let line = this.drawLine(link)
@@ -361,13 +450,20 @@ export default {
                 })
             })
 
+            // draw node after drawing thte line to overlay on it
             this.nodes.forEach(layer => {
                 layer.forEach(item => {
                     let circle = this.drawNode(item.x, item.y)
-                    this.layers[item.layer].node.add(circle)
+                    this.layers[item.layer].node.add(circle).fill('#000')
                 })
             })
 
+            // draw omit dot
+            this.omits.forEach(item => {
+                this.drawOmit(item)
+            })
+
+            // apply style on each item
             this.layers.forEach((item, index) => {
                 item.link.addClass('line')
                     .stroke({ color: this.architecture[index].borderColor, width: this.options.edge.width })

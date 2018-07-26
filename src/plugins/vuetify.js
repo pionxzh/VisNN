@@ -2,6 +2,8 @@ import Vue from 'vue'
 import {
     Vuetify,
     VApp,
+    VBtn,
+    VBtnToggle,
     VCard,
     VCheckbox,
     VDivider,
@@ -9,7 +11,6 @@ import {
     VForm,
     VNavigationDrawer,
     VList,
-    VBtn,
     VIcon,
     VGrid,
     VSlider,
@@ -24,6 +25,8 @@ import 'vuetify/src/stylus/app.styl'
 Vue.use(Vuetify, {
     components: {
         VApp,
+        VBtn,
+        VBtnToggle,
         VCard,
         VCheckbox,
         VDivider,
@@ -31,7 +34,6 @@ Vue.use(Vuetify, {
         VForm,
         VNavigationDrawer,
         VList,
-        VBtn,
         VIcon,
         VGrid,
         VSlider,

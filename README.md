@@ -2,22 +2,14 @@
 
 ## About
 
-VisNN - Web Service for illustrating Deep Neural Network (DNN)
+Web Service for illustrating Deep Neural Network (DNN)
 
 ## Example
+![Example1](https://i.imgur.com/ESb9nTn.png)
 
+![Example2](https://i.imgur.com/ukF4sEA.png)
+
+![Example3](https://i.imgur.com/kNCivts.png)
+
+![Overview](https://i.imgur.com/FqOZ2tv.png)
 ## Issues
-
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run serve
-
-# build for production with minification
-npm run build
-```
-

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "private": false,
-  "repository" {
+  "repository": {
     "type": "git",
     "url": "https://github.com/pionxzh/VisNN"
   },
