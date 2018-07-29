@@ -1,6 +1,6 @@
 <template lang='pug'>
     v-app
-        v-navigation-drawer.pb-0.fix-nav-drawer(app clipped fixed v-model='drawer' :mobile-break-point=800 :width=470 enable-resize-watcher)
+        v-navigation-drawer.pb-0.fix-nav-drawer(app clipped fixed v-model='drawer' :mobile-break-point=800 :width=480 enable-resize-watcher)
             v-layout(fill-height)
                 v-navigation-drawer(dark mini-variant stateless value='true' :mobile-break-point=800)
                     v-list.pt-0
@@ -26,23 +26,28 @@
                                         v-flex(xs12 sm4)
                                             v-text-field(label='Node' type='number' v-model.number='item.amount' outline)
                                         v-flex(xs12 sm8)
-                                            v-text-field(label='Name' type='text' v-model='item.name' outline)
+                                            v-text-field(label='Name' type='text' v-model='layerNames[index]' @blur='update' outline)
                                         v-flex(xs12 sm4)
                                             v-tooltip(top)
                                                 swatches(v-model='item.color' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
-                                                span Fill-Color
+                                                span Fill Color
                                             v-tooltip(top)
                                                 swatches(v-model='item.bgColor' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
-                                                span Backgrond-Color
+                                                span Backgrond Color
                                             v-tooltip(top)
-                                                swatches(v-model='item.borderColor' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
-                                                span Border-Color
+                                                swatches(v-model='item.lineColor' slot='activator' :colors='colorTemplate' row-length='10' popover-to='right' swatch-size='25')
+                                                span Line Color
                                         v-flex(xs12 sm8)
                                             v-slider(v-model='item.spacing' min=20 max=100 step=5 label='Spacing')
                                         v-flex(xs12)
-                                            v-btn-toggle
+                                            v-btn-toggle.elevation-3
                                                 v-btn(flat)
-                                                    span Left
+                                                    v-icon format_bold
+                                                v-btn(flat)
+                                                    v-icon format_italic
+                                                v-btn(flat)
+                                                    v-icon format_color_fill
+                                                v-btn(flat)
                                                     v-icon format_align_left
                             v-btn(block color='primary' @click='addLayer')
                                 v-icon add
@@ -59,27 +64,28 @@
 
                                 v-slider(v-model='options.edge.width' label='Edge Width' min=0.5 max=5 step=0.1 thumb-label)
                                 v-slider(v-model='options.edge.opacity' label='Edge Opacity' min=0.1 max=1 step=0.1 thumb-label)
-                                // v-text-field(v-model='name' label='Name' required)
                                 v-checkbox(color='primary' v-model='options.edge.widthProportional' label='Edge width proportional to edge weights')
                                 v-checkbox(color='primary' v-model='options.edge.opacityProportional' label='Edge opacity proportional to edge weights')
 
                                 p(style='font-size: 18px;') Node
                                 v-divider
-                                v-slider(v-model='options.node.diamiter' max=70 label='Node Diamiter' thumb-label)
+                                v-slider(v-model='options.node.diamiter' max=80 label='Node Diamiter' thumb-label)
                                 v-slider(v-model='options.node.borderWidth' min=0.5 max=10 step=0.5 label='Node BorderWidth' thumb-label)
+                                v-slider(v-model='options.node.omitGap' min=1 max=15 step=1 label='Omit Dot Gap' thumb-label)
 
                                 p(style='font-size: 18px;') Layer
                                 v-divider
                                 v-slider(v-model='options.layer.spacing' min=75 max=300 step=5 label='Spacing' thumb-label='always')
 
         v-toolbar(app clipped-left)
-            v-toolbar-side-icon(@click.stop='miniVariant = !miniVariant')
+            v-toolbar-side-icon(@click.stop='drawer = !drawer')
 
             v-toolbar-title VisNN
             v-spacer
 
-            v-btn(icon)
-                v-icon home
+            a(href='https://github.com/pionxzh/VisNN' target='_blank' style='text-decoration: none;')
+                v-btn(icon)
+                    v-icon fab fa-github
 
         v-content
             v-container(fluid fill-height)
@@ -97,10 +103,6 @@ import SVG from 'svg.js'
 import { parse } from 'babylon'
 import Swatches from 'vue-swatches'
 import 'vue-swatches/dist/vue-swatches.min.css'
-
-function parseFromID (id) {
-    return id.split('_').map(x => parseInt(x))
-}
 
 let range = n => [...Array(n).keys()]
 
@@ -152,41 +154,37 @@ export default {
                 biasUnits: false
             }
         },
+        layerNames: ['Input layer', 'Hidden Layer #1', 'Hidden Layer #2', 'Hidden Layer #3', 'Output Layer'],
         architecture: [{
-            name: 'Input Layer',
             amount: 744,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(234, 153, 153)',
-            borderColor: '#000'
+            lineColor: '#000'
         }, {
-            name: 'Hidden Layer #1',
             amount: 16,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(164, 194, 244)',
-            borderColor: '#000'
+            lineColor: '#000'
         }, {
-            name: 'Hidden Layer #2',
             amount: 16,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(164, 194, 244)',
-            borderColor: '#000'
+            lineColor: '#000'
         }, {
-            name: 'Hidden Layer #3',
             amount: 16,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(164, 194, 244)',
-            borderColor: '#000'
+            lineColor: '#000'
         }, {
-            name: 'Output Layer',
             amount: 10,
             spacing: 50,
             color: '#FFF',
             bgColor: 'rgb(182, 215, 168)',
-            borderColor: '#000'
+            lineColor: '#000'
         }],
         colorTemplate: [
             ['#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef', '#fafafa', '#ffffff'],
@@ -202,22 +200,24 @@ export default {
     // computed: {},
     mounted () {
         this.init()
-        let preset = window.location.search
+        const preset = window.location.search
         if (!preset.length) return
 
-        let layers = preset.split('=')[1].split(',').map(item => parseInt(item))
-        console.log(layers)
+        const layers = preset.split('layers=')[1].split(',').map(item => parseInt(item))
+        if (!layers.length) return
+
+        this.layerNames = []
         this.architecture = []
         layers.forEach((item, index) => {
             const name = index === 0 ? 'Input layer' : index === (layers.length - 1) ? 'Output layer' : `Hidden Layer #${index}`
             const bgColor = index === 0 ? 'rgb(234, 153, 153)' : index === (layers.length - 1) ? 'rgb(182, 215, 168)' : 'rgb(164, 194, 244)'
+            this.layerNames.push(name)
             this.architecture.push({
-                name: name,
                 amount: item,
                 spacing: 50,
                 color: '#FFF',
                 bgColor: bgColor,
-                borderColor: '#000'
+                lineColor: '#000'
             })
         })
     },
@@ -275,9 +275,6 @@ export default {
 
                 console.log(`Svg size: (${this.w}, ${this.h})`)
                 this.update()
-
-                // this.graph.line(this.w / 2, 0, 0, this.h / 2).stroke({ width: this.options.edge.width })
-                // this.graph.line(this.w / 2, 0, this.w / 2, this.h / 2).stroke({ width: this.options.edge.width })
             }
         },
 
@@ -290,9 +287,9 @@ export default {
 
             this.graph.on('mousemove', function (event) {
                 if (this.remember('start')) {
-                    let box = this.remember('start').viewbox
-                    let x = box.x - (event.pageX - this.remember('start').x)
-                    let y = box.y - (event.pageY - this.remember('start').y)
+                    const box = this.remember('start').viewbox
+                    const x = box.x - (event.pageX - this.remember('start').x)
+                    const y = box.y - (event.pageY - this.remember('start').y)
 
                     this.viewbox(x, y, box.width, box.height)
                 }
@@ -306,12 +303,16 @@ export default {
         zoom (e) {
             e.stopPropagation()
 
-            let min = 200
-            let max = 3000
-            let step = 50
-            let box = this.graph.viewbox()
-            let newWidth = e.wheelDelta > 0 ? (box.width > min ? box.width - step : min) : (box.width < max ? box.width + step : max)
+            const min = 200
+            const max = 3000
+            const step = 50
+            const box = this.graph.viewbox()
+            const newWidth = e.wheelDelta > 0 ? (box.width > min ? box.width - step : min) : (box.width < max ? box.width + step : max)
             this.graph.viewbox(box.x, box.y, newWidth, box.height / box.width * (newWidth))
+        },
+
+        parseFromID (id) {
+            return id.split('_').map(x => parseInt(x))
         },
 
         addLayer () {
@@ -320,21 +321,22 @@ export default {
                 link: this.graph.set()
             })
 
-            let last = this.architecture.length - 1
-            if (this.architecture[last].name.indexOf('Output Layer') !== -1) {
-                this.architecture[last].name = `Hidden Layer #${last}`
+            const last = this.layerNames.length - 1
+            if (this.layerNames[last].indexOf('Output Layer') !== -1) {
+                this.layerNames[last] = `Hidden Layer #${last}`
             }
+            this.layerNames.push('Output Layer')
             this.architecture.push({
-                name: 'Output Layer',
                 amount: 0,
                 spacing: 50,
                 color: '#FFF',
                 bgColor: 'rgba(0, 0, 0, 0)',
-                borderColor: '#000'
+                lineColor: '#000'
             })
         },
 
         removeLayer (index) {
+            this.layerNames.splice(index, 1)
             this.architecture.splice(index, 1)
         },
 
@@ -358,11 +360,11 @@ export default {
         buildMap () {
             const centerX = this.w / 2
             const centerY = this.h / 2
+            const layerNum = this.architecture.length
             const offsetX = this.options.layer.spacing
             const maxLayerNode = Math.max(...this.architecture.map(item => item.amount))
             const centerLayerIndex = ~~(this.architecture.filter(item => item.amount > 0).length / 2)
 
-            let layerNum = this.architecture.length
             this.layers = this.architecture.map(index => {
                 return {
                     node: this.graph.set(),
@@ -422,7 +424,7 @@ export default {
         },
 
         drawMap () {
-            parseFromID('1_2')
+            this.parseFromID('1_2')
 
             let textCenterY = 0
 
@@ -436,7 +438,7 @@ export default {
 
             // draw layer name
             this.nodes.forEach((layer, index) => {
-                this.graph.text(this.architecture[index].name).font({size: 18})
+                this.graph.text(this.layerNames[index]).font({size: 18})
                     .center(layer[0].x, textCenterY + this.architecture[index].spacing)
                 this.graph.text(`${this.architecture[index].amount} neurals`).font({size: 16})
                     .center(layer[0].x, textCenterY + this.architecture[index].spacing + 20)
@@ -466,7 +468,7 @@ export default {
             // apply style on each item
             this.layers.forEach((item, index) => {
                 item.link.addClass('line')
-                    .stroke({ color: this.architecture[index].borderColor, width: this.options.edge.width })
+                    .stroke({ color: this.architecture[index].lineColor, width: this.options.edge.width })
                     .opacity(this.options.edge.opacity)
 
                 item.node.addClass('node')
