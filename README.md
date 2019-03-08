@@ -2,7 +2,7 @@
 
 ## About
 
-Web Service for illustrating Deep Neural Network (DNN)
+Web Service for illustrating Deep Neural Network (DNN) architecture
 
 ## Example
 ![Example1](https://i.imgur.com/ESb9nTn.png)
@@ -12,4 +12,5 @@ Web Service for illustrating Deep Neural Network (DNN)
 ![Example3](https://i.imgur.com/kNCivts.png)
 
 ![Overview](https://i.imgur.com/FqOZ2tv.png)
+
 ## Issues

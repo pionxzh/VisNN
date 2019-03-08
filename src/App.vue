@@ -39,7 +39,7 @@
                                                 span Line Color
                                         v-flex(xs12 sm8)
                                             v-slider(v-model='item.spacing' min=20 max=100 step=5 label='Spacing')
-                                        v-flex(xs12)
+                                        //v-flex(xs12)
                                             v-btn-toggle.elevation-3
                                                 v-btn(flat)
                                                     v-icon format_bold
@@ -49,7 +49,7 @@
                                                     v-icon format_color_fill
                                                 v-btn(flat)
                                                     v-icon format_align_left
-                            v-btn(block color='primary' @click='addLayer')
+                            v-btn(block color='primary' @click='addEmptyLayer')
                                 v-icon add
 
                 v-card(width=389 v-if='tab==="Styles"')
@@ -315,12 +315,7 @@ export default {
             return id.split('_').map(x => parseInt(x))
         },
 
-        addLayer () {
-            this.layers.push({
-                node: this.graph.set(),
-                link: this.graph.set()
-            })
-
+        addEmptyLayer () {
             const last = this.layerNames.length - 1
             if (this.layerNames[last].indexOf('Output Layer') !== -1) {
                 this.layerNames[last] = `Hidden Layer #${last}`
@@ -440,7 +435,7 @@ export default {
             this.nodes.forEach((layer, index) => {
                 this.graph.text(this.layerNames[index]).font({size: 18})
                     .center(layer[0].x, textCenterY + this.architecture[index].spacing)
-                this.graph.text(`${this.architecture[index].amount} neurals`).font({size: 16})
+                this.graph.text(`${this.architecture[index].amount} neurons`).font({size: 16})
                     .center(layer[0].x, textCenterY + this.architecture[index].spacing + 20)
             })
 
