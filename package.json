@@ -16,7 +16,7 @@
   "dependencies": {
     "pug-plain-loader": "^1.0.0",
     "svg.js": "^2.6.5",
-    "lodash": ">=4.17.11",
+    "lodash": ">=4.17.19",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vue-swatches": "^1.0.1",
